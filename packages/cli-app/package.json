@@ -1,0 +1,42 @@
+{
+  "name": "lyfe",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "cli for lyfe!",
+  "main": "bin/index.js",
+  "keywords": [
+    "Lyzr.ai",
+    "AI Agents",
+    "AI",
+    "Agents Programming"
+  ],
+  "author": "Lyzr.ai",
+  "license": "ISC",
+  "bin": {
+    "lyfe": "./bin/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts --out-dir bin",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0",
+    "degit": "^2.8.4",
+    "detect-package-manager": "^3.0.2",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^12.6.3",
+    "ora": "^8.2.0",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.5",
+    "@types/degit": "^2.8.6",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.3",
+    "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
