@@ -7,11 +7,8 @@ import ConsoleMessageHandler from "../utils/consoleMessageHandler";
 import { spinner } from "../utils/spinner";
 import inquirer from "inquirer";
 import degit from "degit";
-import {
-  NEXT_TEMPLATE_REPO_URL,
-  VITE_TEMPLATE_REPO_URL,
-} from "../utils/repoUrls";
 import { detect } from "detect-package-manager";
+import { fetchTemplateUrls } from "../utils/registry";
 
 export interface InitProjectPropTypes {
   template: boolean;
@@ -84,12 +81,14 @@ export async function createProject(directoryName: string) {
 
   const projectCreateSpinner = spinner("Scaffolding project...").start();
 
-  const destPath = path.resolve(process.cwd(), directoryName);
-
   try {
+    const templateUrls = await fetchTemplateUrls();
+    const destPath = path.resolve(process.cwd(), directoryName);
     await cloneGithubTemplate(
       destPath,
-      template === "VITE" ? VITE_TEMPLATE_REPO_URL : NEXT_TEMPLATE_REPO_URL
+      template === "VITE"
+        ? templateUrls.VITE_TEMPLATE_REPO_URL
+        : templateUrls.NEXT_TEMPLATE_REPO_URL
     );
 
     projectCreateSpinner.succeed("Project created successfully");
