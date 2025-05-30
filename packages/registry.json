@@ -1,0 +1,6 @@
+{
+  "TEMPLATE_URLS": {
+    "VITE_TEMPLATE_URL": "https://github.com/kanhaiya-v/lyfe-vite-template.git",
+    "NEXT_TEMPLATE_URL": "https://github.com/kanhaiya-v/lyfe-next-template.git"
+  }
+}
