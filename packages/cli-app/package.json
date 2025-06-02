@@ -1,24 +1,42 @@
 {
-  "name": "lyfe",
-  "version": "0.0.1",
+  "name": "lyfe-cli",
+  "version": "1.0.0",
   "type": "module",
-  "description": "cli for lyfe!",
+  "description": "CLI tool for Lyzr.ai - AI Agents Programming Platform",
   "main": "bin/index.js",
+  "files": [
+    "bin",
+    "README.md"
+  ],
   "keywords": [
-    "Lyzr.ai",
+    "lyzr",
+    "lyzr.ai",
     "AI Agents",
     "AI",
-    "Agents Programming"
+    "Agents Programming",
+    "cli",
+    "command-line"
   ],
   "author": "Lyzr.ai",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LyzrCore/lyfe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LyzrCore/lyfe/issues"
+  },
+  "homepage": "https://github.com/LyzrCore/lyfe#readme",
   "bin": {
     "lyfe": "./bin/index.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --out-dir bin",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "preversion": "pnpm lint",
+    "version": "pnpm format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "axios": "^1.9.0",
