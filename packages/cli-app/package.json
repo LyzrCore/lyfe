@@ -1,6 +1,6 @@
 {
   "name": "lyfe-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "CLI tool for Lyzr.ai - AI Agents Programming Platform",
   "main": "bin/index.js",

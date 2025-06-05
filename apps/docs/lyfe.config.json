@@ -1,0 +1,10 @@
+{
+  "name": "lyfe",
+  "description": "lyfe is a cli for creating and managing lyzr projects",
+  "version": "0.0.1",
+  "alias": {
+    "templates": "src/templates/lyfe",
+    "components": "src/components/lyfe",
+    "utils": "src/utils/lyfe"
+  }
+}

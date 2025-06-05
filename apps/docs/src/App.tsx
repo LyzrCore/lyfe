@@ -1,11 +1,15 @@
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-import { LoginTemplate } from "@lyfe/template";
+import AppRoutes from "./routes";
 
 function App() {
   return (
-    <div>
-      <LoginTemplate />
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+    // <div>
+   
+    // </div>
   );
 }
 
