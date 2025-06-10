@@ -40,6 +40,52 @@ pnpm run dev
 pnpm run build
 \`\`\`
 
+## 🔧 Adding to Existing Projects
+
+If you already have a project and want to add Lyfe AI Agent capabilities, you can use the CLI with the \`--no-template\` flag to only add the configuration file:
+
+\`\`\`bash
+pnpm dlx lyfe-cli init --no-template
+\`\`\`
+
+This command will:
+- Create a \`lyfe.config.json\` file in your project root
+- Set up the basic configuration structure
+- Add necessary dependencies to your \`package.json\`
+- Configure your project for Lyfe AI Agent integration
+
+### Configuration Options
+
+The generated \`lyfe.config.json\` includes:
+
+\`\`\`json
+{
+  "name": "lyfe",
+  "description": "lyfe is a cli for creating and managing lyzr projects",
+  "version": "1.0.0",
+  "aliases-local": {
+    "templates": "@/lyfe/templates",
+    "components": "@/lyfe/components",
+    "utils": "@/lyfe/utils",
+    "hooks": "@/lyfe/hooks"
+  },
+  "aliases-shadcn": {
+    "components": "@/shadcn/components",
+    "utils": "@/shadcn/lib/utils",
+    "ui": "@/shadcn/components/ui",
+    "lib": "@/shadcn/lib",
+    "hooks": "@/shadcn/hooks"
+  }
+}
+\`\`\`
+
+This configuration sets up:
+- **Project metadata**: Name, description, and version
+- **Local aliases**: Path mappings for Lyfe-specific components and utilities
+- **Shadcn aliases**: Path mappings for UI components and utilities
+
+You can customize these settings based on your project requirements. See the [Configuration Guide](/configuration) for detailed options.
+
 ## 📝 Next Steps
 
 After installation:
