@@ -12,13 +12,14 @@ import React from "react";
 
 export declare type NavMainProps = {
   items: RouteDefinitionType[];
+  label?: string;
 };
 
 // TODO: Add collapsible
-const NavMain: React.FC<NavMainProps> = ({ items }) => {
+const NavMain: React.FC<NavMainProps> = ({ items, label }) => {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem>

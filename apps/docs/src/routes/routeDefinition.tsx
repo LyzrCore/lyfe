@@ -1,3 +1,4 @@
+import DemoChatInterface from "@/features/demo/DemoChatInterface";
 import Architecture from "@/features/architecture";
 import Guidelines from "@/features/guidelines";
 import Installation from "@/features/installation";
@@ -7,6 +8,7 @@ import {
   Code,
   FileJson,
   Library,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +47,16 @@ export const SidebarRoutesDefinition: RouteDefinitionType[] = [
   },
 ];
 
+export const DemoRoutesDefinition: RouteDefinitionType[] = [
+  {
+    name: "Chat Interface",
+    path: "/chat-interface",
+    component: <DemoChatInterface />,
+    icon: MessageCircle,
+  },
+];
+
 export const RoutesDefinition: RouteDefinitionType[] = [
   ...SidebarRoutesDefinition,
+  ...DemoRoutesDefinition,
 ];
