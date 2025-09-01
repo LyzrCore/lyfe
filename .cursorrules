@@ -1,0 +1,445 @@
+# Lyfe Frontend Project - Cursor Rules
+
+## 🏗️ Project Architecture Overview
+
+This project follows a **feature-based architecture** with **component-driven development** principles. The structure emphasizes modularity, scalability, and maintainability through clear separation of concerns.
+
+### Core Architecture Principles
+- **Feature-based organization**: Each domain feature is self-contained
+- **Component-driven development**: Reusable UI components as building blocks
+- **Clean separation**: Clear boundaries between logic, presentation, and data
+- **Type safety**: Full TypeScript implementation with strict typing
+- **Modern tooling**: Vite/Next.js, Tailwind CSS, shadcn/ui components
+
+## 📁 Directory Structure & Conventions
+
+### Required Directory Structure
+```
+src/
+├── components/          # Shared, reusable UI components
+│   ├── ui/             # Primitive components (button, input, etc.)
+│   ├── layout/         # App shell components (navbar, sidebar)
+│   └── shared/         # Reusable widgets (avatar, user menu, etc.)
+├── features/           # Feature-based domain folders
+│   ├── auth/          # Auth logic (api, hooks, components)
+│   └── [feature]/     # Other domain features
+├── lib/               # Utility functions and constants
+├── providers/         # App-wide providers (query, zustand, theme)
+├── routes/            # React Router route definitions and guards
+├── store/            # Global state management
+├── assets/           # Static assets (images, fonts, etc.)
+├── styles/           # Tailwind and global CSS
+└── types/            # Shared TypeScript types
+```
+
+### Feature Folder Structure
+Each feature must follow this structure:
+```
+features/[feature-name]/
+├── components/        # Feature-specific components
+│   ├── index.ts      # Public exports
+│   └── [Component].tsx
+├── hooks/            # Custom hooks
+│   ├── index.ts      # Public exports
+│   └── use[Hook].ts
+├── types/            # TypeScript types
+│   └── index.ts      # Type definitions
+├── api/              # API calls and data fetching
+│   └── index.ts      # API functions
+├── store/            # Feature-specific state (if needed)
+│   └── index.ts      # Zustand store
+└── index.ts          # Feature public API
+```
+
+## 🧩 Component Development Standards
+
+### Component Structure
+- **File naming**: PascalCase for components (e.g., `Button.tsx`, `UserProfile.tsx`)
+- **Component naming**: PascalCase (e.g., `Button`, `UserProfile`)
+- **Props interface**: Extend HTML element props when applicable
+- **Default exports**: Use named exports for components
+- **Index files**: Always create index.ts for public exports
+
+### Component Template
+```typescript
+import { cn } from "@/lib/utils"
+import { ComponentProps } from "./types"
+
+/**
+ * Component description
+ * @example
+ * <Component variant="primary" onClick={handleClick}>
+ *   Content
+ * </Component>
+ */
+export const Component = ({
+  className,
+  variant = "default",
+  children,
+  ...props
+}: ComponentProps) => {
+  return (
+    <div
+      className={cn(
+        "base-styles",
+        variantStyles[variant],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+### Props Interface Standards
+```typescript
+export interface ComponentProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "primary" | "secondary"
+  size?: "sm" | "md" | "lg"
+  isLoading?: boolean
+  // Always extend appropriate HTML element props
+}
+```
+
+## 🎣 Hooks Development Standards
+
+### Hook Naming & Structure
+- **File naming**: camelCase with 'use' prefix (e.g., `useAuth.ts`, `useChat.ts`)
+- **Hook naming**: camelCase with 'use' prefix (e.g., `useAuth`, `useChat`)
+- **Return objects**: Always return an object with named properties
+- **Error handling**: Include error states and loading states
+
+### Hook Template
+```typescript
+export const useHook = () => {
+  const [data, setData] = useState<DataType | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    // Hook logic
+  }, [])
+
+  return {
+    data,
+    loading,
+    error,
+    // Action functions
+  }
+}
+```
+
+### Data Fetching Hooks
+```typescript
+export const useData = () => {
+  return useQuery({
+    queryKey: ['data'],
+    queryFn: async () => {
+      const response = await apiClient.get('/api/data')
+      return response.data
+    }
+  })
+}
+```
+
+## 📦 State Management Standards
+
+### Local State
+- Use `useState` for simple component state
+- Use `useReducer` for complex state logic
+- Keep state as close as possible to where it's used
+- Avoid prop drilling - use context or state management libraries
+
+### Global State (Zustand)
+```typescript
+interface AppState {
+  theme: 'light' | 'dark'
+  user: User | null
+  setTheme: (theme: 'light' | 'dark') => void
+  setUser: (user: User | null) => void
+}
+
+export const useAppStore = create<AppState>((set) => ({
+  theme: 'light',
+  user: null,
+  setTheme: (theme) => set({ theme }),
+  setUser: (user) => set({ user })
+}))
+```
+
+### Feature-Specific Stores
+- Place in `features/[feature]/store/index.ts`
+- Keep stores lightweight and focused
+- Use TypeScript interfaces for state shape
+- Implement proper error handling
+
+## 🌐 API & Data Handling Standards
+
+### API Client Structure
+```typescript
+// lib/api/client.ts
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+export const apiClient = {
+  get: <T>(url: string, config?: AxiosRequestConfig) => 
+    api.get<T>(url, config).then(res => res.data),
+  post: <T>(url: string, data: unknown, config?: AxiosRequestConfig) => 
+    api.post<T>(url, data, config).then(res => res.data),
+  // ... other methods
+}
+```
+
+### API Hooks
+```typescript
+// features/[feature]/hooks/useApi.ts
+export const useApi = <T>(url: string, options?: UseQueryOptions<T>) => {
+  return useQuery({
+    queryKey: [url],
+    queryFn: () => apiClient.get<T>(url),
+    ...options
+  })
+}
+```
+
+### Error Handling
+- Always include error states in API calls
+- Use React Query's built-in error handling
+- Implement proper loading states
+- Provide user-friendly error messages
+
+## 📘 TypeScript Standards
+
+### Type Definitions
+- **Interface naming**: PascalCase (e.g., `UserProfile`, `ApiResponse`)
+- **Type naming**: PascalCase (e.g., `UserRole`, `ApiStatus`)
+- **Union types**: Use for limited value sets (e.g., `'admin' | 'user' | 'guest'`)
+- **Generic types**: Use for reusable type patterns
+
+### Type Structure
+```typescript
+export type UserRole = 'admin' | 'user' | 'guest'
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  createdAt: Date
+}
+
+export type ApiResponse<T> = {
+  data: T
+  status: 'success' | 'error'
+  message?: string
+}
+```
+
+### Type Guards
+```typescript
+export const isUser = (value: unknown): value is User => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'name' in value &&
+    'email' in value
+  )
+}
+```
+
+## 🎨 UI & Styling Standards
+
+### Tailwind CSS Usage
+- Use utility classes for styling
+- Leverage Tailwind's design system
+- Use `cn()` utility for conditional classes
+- Follow mobile-first responsive design
+
+### Component Styling
+```typescript
+const variantStyles = {
+  default: "bg-primary text-primary-foreground",
+  secondary: "bg-secondary text-secondary-foreground",
+  outline: "border border-input bg-background"
+}
+
+const sizeStyles = {
+  sm: "h-8 px-3 text-sm",
+  md: "h-9 px-4 py-2",
+  lg: "h-10 px-6 py-2"
+}
+```
+
+### shadcn/ui Integration
+- Use shadcn/ui components as building blocks
+- Extend components when needed, don't modify core components
+- Follow shadcn/ui patterns for variants and sizes
+- Use Radix UI primitives for accessibility
+
+## 🛣️ Routing Standards
+
+### Route Organization
+- **Vite**: Use React Router with route definitions in `routes/`
+- **Next.js**: Use file-based routing in `pages/` or `app/`
+- **Route guards**: Implement authentication and authorization checks
+- **Lazy loading**: Use for route components to improve performance
+
+### Route Structure (Vite)
+```typescript
+// routes/routeDefinition.tsx
+export const RoutesDefinition: RouteDefinitionType[] = [
+  {
+    name: "Feature",
+    path: "/feature",
+    component: <Feature />,
+    icon: FeatureIcon,
+  }
+]
+
+// routes/index.tsx
+const AppRoutes = () => (
+  <Routes>
+    <Route element={<AppLayout />}>
+      {RoutesDefinition.map((route) => (
+        <Route key={route.path} path={route.path} element={route.component} />
+      ))}
+    </Route>
+  </Routes>
+)
+```
+
+### Protected Routes
+```typescript
+// lib/requireAuth/index.tsx
+export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth()
+  
+  if (loading) return <LoadingSpinner />
+  if (!user) return <Navigate to="/login" replace />
+  
+  return <>{children}</>
+}
+```
+
+## 🔧 Configuration & Tooling
+
+### Required Configuration Files
+- `tsconfig.json` - TypeScript configuration with strict mode
+- `tailwind.config.ts` - Tailwind CSS configuration
+- `eslint.config.js` - ESLint configuration
+- `components.json` - shadcn/ui configuration
+- `vite.config.ts` or `next.config.js` - Build tool configuration
+
+### TypeScript Configuration
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### ESLint Configuration
+- Use TypeScript ESLint rules
+- Include React Hooks rules
+- Enforce consistent code style
+- Prevent common mistakes
+
+## 📝 Code Quality Standards
+
+### Documentation Requirements
+- **JSDoc comments**: For all public functions and components
+- **README files**: For features and complex components
+- **Type documentation**: Clear interface and type descriptions
+- **Usage examples**: Include in component documentation
+
+### Testing Standards
+- **Unit tests**: For utilities and hooks
+- **Component tests**: For UI components
+- **Integration tests**: For feature workflows
+- **E2E tests**: For critical user journeys
+
+### Performance Standards
+- **Code splitting**: Use lazy loading for routes
+- **Memoization**: Use React.memo, useMemo, useCallback appropriately
+- **Bundle optimization**: Minimize bundle size
+- **Image optimization**: Use proper image formats and lazy loading
+
+## 🚫 Anti-Patterns to Avoid
+
+### Architecture Anti-Patterns
+- ❌ **Monolithic components**: Don't create components with too many responsibilities
+- ❌ **Deep nesting**: Avoid deeply nested component hierarchies
+- ❌ **Global state abuse**: Don't put everything in global state
+- ❌ **Prop drilling**: Use context or state management instead
+
+### Code Quality Anti-Patterns
+- ❌ **Any types**: Avoid using `any` - use proper typing
+- ❌ **Inline styles**: Use Tailwind classes instead
+- ❌ **Hardcoded values**: Use constants and environment variables
+- ❌ **Console logs**: Remove console.log statements in production
+
+### Performance Anti-Patterns
+- ❌ **Unnecessary re-renders**: Avoid creating objects/functions in render
+- ❌ **Large bundles**: Don't import entire libraries when you only need specific functions
+- ❌ **Memory leaks**: Clean up event listeners and subscriptions
+
+## ✅ Code Review Checklist
+
+### Before Committing
+- [ ] Follows naming conventions
+- [ ] Properly typed with TypeScript
+- [ ] Includes error handling
+- [ ] Has appropriate tests
+- [ ] Follows accessibility guidelines
+- [ ] Implements proper memoization
+- [ ] Uses code splitting where appropriate
+- [ ] Includes JSDoc comments
+- [ ] Follows component structure standards
+- [ ] Uses proper state management patterns
+
+### Architecture Review
+- [ ] Feature is properly organized
+- [ ] Components are reusable
+- [ ] State management is appropriate
+- [ ] API calls follow patterns
+- [ ] Routing is properly implemented
+- [ ] Types are well-defined
+- [ ] Error boundaries are in place
+
+## 🎯 Best Practices Summary
+
+1. **Think in features**: Organize code by domain, not by technical concerns
+2. **Component composition**: Build complex UIs from simple, reusable components
+3. **Type safety first**: Use TypeScript to prevent runtime errors
+4. **Performance conscious**: Always consider the impact on user experience
+5. **Accessibility**: Build for all users, not just the majority
+6. **Testing**: Write tests as you develop, not as an afterthought
+7. **Documentation**: Document your decisions and patterns
+8. **Consistency**: Follow established patterns throughout the codebase
+
+## 🔄 Continuous Improvement
+
+- Regularly review and update these rules
+- Gather feedback from the development team
+- Adapt patterns based on project needs
+- Stay updated with modern React and TypeScript best practices
+- Learn from code reviews and team discussions
+
+---
+
+**Remember**: These rules are guidelines to help maintain code quality and consistency. Use your judgment and adapt them to your specific project needs while maintaining the core architectural principles.
