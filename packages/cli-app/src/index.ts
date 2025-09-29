@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { initProject } from "./commands/init";
+import { addComponent } from "./commands/add";
 
 const program = new Command();
 
@@ -14,6 +15,15 @@ program
   .option("--no-template", "Skip setting up the template.")
   .action(async (name, opts) => {
     await initProject({ name, template: !opts.template });
+  });
+
+program
+  .command("add")
+  .description("Add a component to the project")
+  .argument("[component]", "Name of the component")
+  .option("--skip-depen", "Skip adding dependencies")
+  .action(async (component, opts) => {
+    await addComponent({ component, skipDependencies: opts.skipDependencies });
   });
 
 program.parse();
