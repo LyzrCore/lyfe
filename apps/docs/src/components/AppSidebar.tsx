@@ -1,4 +1,7 @@
-import { RoutesDefinition } from "@/routes/routeDefinition";
+import {
+  ComponentRouteDefinition,
+  PlatformRouteDefinition,
+} from "@/routes/routeDefinition";
 import {
   Sidebar,
   SidebarContent,
@@ -29,7 +32,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={RoutesDefinition} />
+        <NavMain items={PlatformRouteDefinition} />
+        <NavMain items={ComponentRouteDefinition} label="Components" />
+        <NavMain items={[]} label="Templates" />
+        <NavMain items={[]} label="Services" />
       </SidebarContent>
     </Sidebar>
   );

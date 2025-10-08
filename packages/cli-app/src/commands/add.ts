@@ -5,6 +5,8 @@ import {
   fetchHooksPath,
   fetchUtilsPath,
   fetchLocalDependencyPath,
+  LocalDependeciesResolve,
+  LocalDependeciesResolveType,
 } from "../utils/registry";
 import { spinner } from "../utils/spinner";
 import path from "path";
@@ -129,66 +131,117 @@ export async function addComponent({
       spinnerInstance.text = "Handling local dependencies...";
 
       for (const localDep of componentInfo.localDependenciesResolve) {
-        const localDepPath = path.join(cwd, basePath, localDep);
+        let targetPath: string;
+        let sourceUrl: string;
+
+        // Determine target path and source URL based on type
+        switch (localDep.type) {
+          case "COMPONENT":
+            const componentAlias = lyfeConfig["aliases-local"]?.components;
+            if (!componentAlias) {
+              throw new Error(
+                "Component alias not found in lyfe.config.json for local dependency"
+              );
+            }
+            targetPath = path.join(
+              cwd,
+              componentAlias.replace("@/", ""),
+              localDep.path
+            );
+            sourceUrl = await fetchComponentPath(localDep.path);
+            break;
+
+          case "HOOK":
+            const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
+            if (!hooksAlias) {
+              throw new Error(
+                "Hooks alias not found in lyfe.config.json for local dependency"
+              );
+            }
+            targetPath = path.join(
+              cwd,
+              hooksAlias.replace("@/", ""),
+              `${localDep.path}.ts`
+            );
+            sourceUrl = await fetchHooksPath(localDep.path);
+            break;
+
+          case "UTILS":
+            const utilsAlias = lyfeConfig["aliases-local"]?.utils;
+            if (!utilsAlias) {
+              throw new Error(
+                "Utils alias not found in lyfe.config.json for local dependency"
+              );
+            }
+            targetPath = path.join(
+              cwd,
+              utilsAlias.replace("@/", ""),
+              `${localDep.path}.ts`
+            );
+            sourceUrl = await fetchUtilsPath(localDep.path);
+            break;
+
+          default:
+            throw new Error(`Unknown local dependency type: ${localDep.type}`);
+        }
 
         // Check if file exists, if not copy it
-        if (!fs.existsSync(localDepPath)) {
-          const localDepUrl = await fetchLocalDependencyPath(localDep);
-          const localDepResponse = await axios.get(localDepUrl);
+        if (!fs.existsSync(targetPath)) {
+          const localDepResponse = await axios.get(sourceUrl);
           const localDepCode = localDepResponse.data;
 
           // Ensure directory exists
-          await fs.ensureDir(path.dirname(localDepPath));
-          await fs.writeFile(localDepPath, localDepCode);
+          await fs.ensureDir(path.dirname(targetPath));
+          await fs.writeFile(targetPath, localDepCode);
         }
       }
     }
 
     // Handle hooks
-    if (componentInfo.hooks?.length) {
-      spinnerInstance.text = "Handling hooks...";
+    // if (componentInfo.hooks?.length) {
+    //   spinnerInstance.text = "Handling hooks...";
 
-      const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
-      if (hooksAlias) {
-        const hooksFolderPath = path.join(cwd, hooksAlias.replace("@/", ""));
-        await fs.ensureDir(hooksFolderPath);
+    //   const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
+    //   if (hooksAlias) {
+    //     const hooksFolderPath = path.join(cwd, hooksAlias.replace("@/", ""));
+    //     await fs.ensureDir(hooksFolderPath);
 
-        for (const hook of componentInfo.hooks) {
-          const hookPath = path.join(hooksFolderPath, `${hook}.ts`);
+    //     for (const hook of componentInfo.hooks) {
+    //       const hookPath = path.join(hooksFolderPath, `${hook}.ts`);
 
-          // Check if file exists, if not copy it
-          if (!fs.existsSync(hookPath)) {
-            const hookUrl = await fetchHooksPath(hook);
-            const hookResponse = await axios.get(hookUrl);
-            const hookCode = hookResponse.data;
-            await fs.writeFile(hookPath, hookCode);
-          }
-        }
-      }
-    }
+    //       // Check if file exists, if not copy it
+    //       if (!fs.existsSync(hookPath)) {
+    //         const hookUrl = await fetchHooksPath(hook);
+    //         const hookResponse = await axios.get(hookUrl);
+    //         const hookCode = hookResponse.data;
+    //         await fs.writeFile(hookPath, hookCode);
+    //       }
+    //     }
+    //   }
+    // }
 
-    // Handle utils
-    if (componentInfo.utils?.length) {
-      spinnerInstance.text = "Handling utils...";
+    // // Handle utils
+    // if (componentInfo.utils?.length) {
+    //   spinnerInstance.text = "Handling utils...";
 
-      const utilsAlias = lyfeConfig["aliases-local"]?.utils;
-      if (utilsAlias) {
-        const utilsFolderPath = path.join(cwd, utilsAlias.replace("@/", ""));
-        await fs.ensureDir(utilsFolderPath);
+    //   const utilsAlias = lyfeConfig["aliases-local"]?.utils;
+    //   if (utilsAlias) {
+    //     const utilsFolderPath = path.join(cwd, utilsAlias.replace("@/", ""));
+    //     await fs.ensureDir(utilsFolderPath);
 
-        for (const util of componentInfo.utils) {
-          const utilPath = path.join(utilsFolderPath, `${util}.ts`);
+    //     for (const util of componentInfo.utils) {
+    //       const utilPath = path.join(utilsFolderPath, `${util}.ts`);
 
-          // Check if file exists, if not copy it
-          if (!fs.existsSync(utilPath)) {
-            const utilUrl = await fetchUtilsPath(util);
-            const utilResponse = await axios.get(utilUrl);
-            const utilCode = utilResponse.data;
-            await fs.writeFile(utilPath, utilCode);
-          }
-        }
-      }
-    }
+    //       // Check if file exists, if not copy it
+    //       if (!fs.existsSync(utilPath)) {
+    //         const utilUrl = await fetchUtilsPath(util);
+    //         const utilResponse = await axios.get(utilUrl);
+    //         const utilCode = utilResponse.data;
+    //         await fs.writeFile(utilPath, utilCode);
+    //       }
+    //     }
+    //   }
+    // }
 
     spinnerInstance.succeed(`Component "${component}" added successfully!`);
     ConsoleMessageHandler.SUCCESS(`Component added at: ${componentFilePath}`);

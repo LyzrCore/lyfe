@@ -4,15 +4,36 @@
     "NEXT_TEMPLATE_URL": "https://github.com/kanhaiya-v/lyfe-next-template.git"
   },
   "COMPONENT": {
-    "chat": {
-      "path": "chat.tsx",
-      "dependencies": [],
-      "localDependenciesResolve": []
+    "chat-panel": {
+      "path": "ChatPanel.tsx",
+      "dependencies": ["lucide-react"],
+      "localDependenciesResolve": [
+        { "type": "COMPONENT", "path": "lyzr-logo" },
+        { "type": "COMPONENT", "path": "markdown" },
+        { "type": "COMPONENT", "path": "dots-loader" }
+      ]
     },
-    "dashboard-layout": {
-      "path": "dashboard-layout.tsx",
-      "dependencies": [],
-      "localDependenciesResolve": []
+    "lyzr-logo": {
+      "path": "LyzrLogo.tsx"
+    },
+    "markdown": {
+      "path": "Markdown.tsx",
+      "dependencies": [
+        "react-markdown",
+        "rehype-raw",
+        "remark-breaks",
+        "remark-gfm"
+      ],
+      "localDependenciesResolve": [
+        { "type": "COMPONENT", "path": "markdown-components" }
+      ]
+    },
+    "dots-loader": {
+      "path": "DotsLoader.tsx"
+    },
+    "markdown-components": {
+      "path": "MarkdownComponents.tsx",
+      "dependencies": ["react-syntax-highlighter"]
     }
   },
   "APPS": {

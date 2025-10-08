@@ -5,12 +5,17 @@ export interface TemplateURLs {
   NEXT_TEMPLATE_REPO_URL: string;
 }
 
+export type LocalDependeciesResolveType = "COMPONENT" | "HOOK" | "UTILS";
+
+export type LocalDependeciesResolve = {
+  type: LocalDependeciesResolveType;
+  path: string;
+};
+
 export type ComponentType = {
   path: string;
   dependencies?: string[];
-  localDependenciesResolve?: string[];
-  hooks?: string[];
-  utils?: string[];
+  localDependenciesResolve?: LocalDependeciesResolve[];
 };
 
 export type RegistryJsonType = {

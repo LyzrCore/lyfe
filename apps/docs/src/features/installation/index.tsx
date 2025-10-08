@@ -1,5 +1,5 @@
 import PageLayout from "@/components/PageLayout";
-import Markdown from "@/components/ReactMarkdown";
+import Markdown from "@/lyfe-shared/Markdown";
 import React from "react";
 
 const Installation: React.FC = () => {
@@ -109,8 +109,8 @@ Ready to start building? Head to the [Architecture](/architecture) guide to lear
   return (
     <PageLayout breadcrumbs={[{ name: "Installation", path: "/installation" }]}>
       <div className="container relative">
-        <div className="mx-auto flex max-w-[980px] flex-col items-start gap-2 py-8 md:flex-row md:justify-between md:gap-12 lg:py-12 xl:py-24">
-          <Markdown content={content} />
+        <div className="mx-auto flex max-w-[980px] flex-col items-start gap-2  md:flex-row md:justify-between md:gap-12 ">
+          <Markdown>{content}</Markdown>
         </div>
       </div>
     </PageLayout>

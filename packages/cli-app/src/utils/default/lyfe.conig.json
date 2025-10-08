@@ -5,7 +5,7 @@
   "base-path": "src",
   "aliases-local": {
     "templates": "@/lyfe/templates",
-    "components": "@/lyfe/components",
+    "components": "@/lyfe/",
     "utils": "@/lyfe/utils",
     "hooks": "@/lyfe/hooks"
   },
