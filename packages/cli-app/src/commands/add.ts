@@ -28,6 +28,10 @@ interface LyfeConfig {
   };
 }
 
+// async function checkForValidations() {
+
+// }
+
 export async function addComponent({
   component,
   skipDependencies,
@@ -124,6 +128,16 @@ export async function addComponent({
       componentFolderPath,
       `${componentInfo?.path}`
     );
+
+    // Check if component already exists
+    if (fs.existsSync(componentFilePath)) {
+      spinnerInstance.stop();
+      ConsoleMessageHandler.WARNING(
+        `Component "${component}" already exists at: ${componentFilePath}`
+      );
+      return;
+    }
+
     await fs.writeFile(componentFilePath, componentCode);
 
     // Handle localDependencyResolve
@@ -137,63 +151,64 @@ export async function addComponent({
         // Determine target path and source URL based on type
         switch (localDep.type) {
           case "COMPONENT":
-            const componentAlias = lyfeConfig["aliases-local"]?.components;
-            if (!componentAlias) {
-              throw new Error(
-                "Component alias not found in lyfe.config.json for local dependency"
-              );
-            }
-            targetPath = path.join(
-              cwd,
-              componentAlias.replace("@/", ""),
-              localDep.path
-            );
-            sourceUrl = await fetchComponentPath(localDep.path);
+            // const componentAlias = lyfeConfig["aliases-local"]?.components;
+            // if (!componentAlias) {
+            //   throw new Error(
+            //     "Component alias not found in lyfe.config.json for local dependency"
+            //   );
+            // }
+            // targetPath = path.join(
+            //   cwd,
+            //   componentAlias.replace("@/", ""),
+            //   localDep.path
+            // );
+            // sourceUrl = await fetchComponentPath(localDep.path);
+            await addComponent({ component: localDep.path, skipDependencies });
             break;
 
-          case "HOOK":
-            const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
-            if (!hooksAlias) {
-              throw new Error(
-                "Hooks alias not found in lyfe.config.json for local dependency"
-              );
-            }
-            targetPath = path.join(
-              cwd,
-              hooksAlias.replace("@/", ""),
-              `${localDep.path}.ts`
-            );
-            sourceUrl = await fetchHooksPath(localDep.path);
-            break;
+          // case "HOOK":
+          //   const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
+          //   if (!hooksAlias) {
+          //     throw new Error(
+          //       "Hooks alias not found in lyfe.config.json for local dependency"
+          //     );
+          //   }
+          //   targetPath = path.join(
+          //     cwd,
+          //     hooksAlias.replace("@/", ""),
+          //     `${localDep.path}.ts`
+          //   );
+          //   sourceUrl = await fetchHooksPath(localDep.path);
+          //   break;
 
-          case "UTILS":
-            const utilsAlias = lyfeConfig["aliases-local"]?.utils;
-            if (!utilsAlias) {
-              throw new Error(
-                "Utils alias not found in lyfe.config.json for local dependency"
-              );
-            }
-            targetPath = path.join(
-              cwd,
-              utilsAlias.replace("@/", ""),
-              `${localDep.path}.ts`
-            );
-            sourceUrl = await fetchUtilsPath(localDep.path);
-            break;
+          // case "UTILS":
+          //   const utilsAlias = lyfeConfig["aliases-local"]?.utils;
+          //   if (!utilsAlias) {
+          //     throw new Error(
+          //       "Utils alias not found in lyfe.config.json for local dependency"
+          //     );
+          //   }
+          //   targetPath = path.join(
+          //     cwd,
+          //     utilsAlias.replace("@/", ""),
+          //     `${localDep.path}.ts`
+          //   );
+          //   sourceUrl = await fetchUtilsPath(localDep.path);
+          //   break;
 
           default:
             throw new Error(`Unknown local dependency type: ${localDep.type}`);
         }
 
         // Check if file exists, if not copy it
-        if (!fs.existsSync(targetPath)) {
-          const localDepResponse = await axios.get(sourceUrl);
-          const localDepCode = localDepResponse.data;
+        // if (!fs.existsSync(targetPath)) {
+        //   const localDepResponse = await axios.get(sourceUrl);
+        //   const localDepCode = localDepResponse.data;
 
-          // Ensure directory exists
-          await fs.ensureDir(path.dirname(targetPath));
-          await fs.writeFile(targetPath, localDepCode);
-        }
+        //   // Ensure directory exists
+        //   await fs.ensureDir(path.dirname(targetPath));
+        //   await fs.writeFile(targetPath, localDepCode);
+        // }
       }
     }
 

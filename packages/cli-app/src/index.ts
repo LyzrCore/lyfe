@@ -1,12 +1,10 @@
-#!/usr/bin/env node
-
 import { Command } from "commander";
 import { initProject } from "./commands/init";
 import { addComponent } from "./commands/add";
 
 const program = new Command();
 
-program.name("lyfe").description("cli for lyfe!").version("0.0.1");
+program.name("lyfe").description("cli for lyfe!").version("1.0.4");
 
 program
   .command("init")

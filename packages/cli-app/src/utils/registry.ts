@@ -46,7 +46,6 @@ export async function fetchComponentInfo(
   component: string
 ): Promise<ComponentType | undefined> {
   const registryJson = await fetchRegistryJson();
-  console.log(registryJson);
   const cmp = registryJson.COMPONENT?.[component];
   return cmp ?? undefined;
 }

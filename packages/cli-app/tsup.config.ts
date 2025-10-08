@@ -6,4 +6,8 @@ export default {
   banner: {
     js: "#!/usr/bin/env node",
   },
+  clean: true,
+  minify: false,
+  sourcemap: false,
+  target: "node18",
 };
