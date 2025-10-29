@@ -4,12 +4,14 @@ import Guidelines from "@/features/guidelines";
 import Installation from "@/features/installation";
 import Introduction from "@/features/introduction";
 import PPTGenService from "@/features/pptGenService";
+import SideNavigationPage from "@/features/sideNavigatio";
 import {
   BadgeInfoIcon,
   Code,
   FileJson,
   Library,
   MessagesSquare,
+  Sidebar,
   type LucideIcon,
 } from "lucide-react";
 
@@ -60,6 +62,12 @@ export const ComponentRouteDefinition: RouteDefinitionType[] = [
     path: "/chat-panel",
     component: <ChatPanelDocs />,
     icon: MessagesSquare,
+  },
+  {
+    name: "Sidebar Components",
+    path: "/sidebar-components",
+    component: <SideNavigationPage />,
+    icon: Sidebar,
   },
 ];
 

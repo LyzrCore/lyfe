@@ -1,6 +1,6 @@
-import { SidebarProvider, SidebarInset } from "@/shadcn/components/ui/sidebar";
-import { AppSidebar } from "./AppSidebar";
+import { SidebarInset, SidebarProvider } from "@/shadcn/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
+import { AppSidebar } from "./AppSidebar";
 
 const AppLayout = () => {
   return (

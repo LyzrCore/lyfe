@@ -1,42 +1,58 @@
+import LyzrLogo from "@/lyfe-shared/LyzrLogo";
+import {
+  SidebarLinks,
+  SidebarLinkType,
+  SidebarLogoHeader,
+  SidebarUserProfile,
+} from "@/lyfe-shared/SidebarComponents";
 import {
   ComponentRouteDefinition,
   PlatformRouteDefinition,
 } from "@/routes/routeDefinition";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/shadcn/components/ui/sidebar";
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "@/shadcn/components/ui/dropdown-menu";
+import { Sidebar, SidebarContent } from "@/shadcn/components/ui/sidebar";
+import { Sparkle } from "lucide-react";
 import * as React from "react";
-import NavMain from "./NavMain";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <a href="/">
-                <img src="/image.png" alt="lyzr.ai" className="!size-5" />
-                <span className="text-base font-semibold">Lyfe by lyzr.ai</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+      <SidebarLogoHeader
+        logo={<LyzrLogo width={32} height={32} />}
+        name="Lyfe by lyzr.ai"
+        href="https://www.lyzr.ai/"
+      />
       <SidebarContent>
-        <NavMain items={PlatformRouteDefinition} />
-        <NavMain items={ComponentRouteDefinition} label="Components" />
-        <NavMain items={[]} label="Templates" />
-        <NavMain items={[]} label="Services" />
+        <SidebarLinks links={PlatformRouteDefinition as SidebarLinkType[]} />
+        <SidebarLinks
+          links={ComponentRouteDefinition as SidebarLinkType[]}
+          label="Components"
+        />
+        {/* <SidebarItems
+          items={[
+            {
+              label: "Project 123",
+              isActive: true,
+              icon: FileIcon,
+              onClick: () => alert("Clicked Project 123"),
+            },
+          ]}
+        /> */}
       </SidebarContent>
+      <SidebarUserProfile
+        user={{ name: "Lyfe Support", email: "kanahaiya@lyzr.ai" }}
+        onLogout={() => alert("You are not allowed to do so!! :)")}
+        additionalActions={
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => alert("Coming Soon!")}>
+              <Sparkle /> Request new feature
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        }
+      />
     </Sidebar>
   );
 }
