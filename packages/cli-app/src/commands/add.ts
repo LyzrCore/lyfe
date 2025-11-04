@@ -1,18 +1,10 @@
-import ConsoleMessageHandler from "../utils/consoleMessageHandler";
-import {
-  fetchComponentInfo,
-  fetchComponentPath,
-  fetchHooksPath,
-  fetchUtilsPath,
-  fetchLocalDependencyPath,
-  LocalDependeciesResolve,
-  LocalDependeciesResolveType,
-} from "../utils/registry";
-import { spinner } from "../utils/spinner";
-import path from "path";
-import fs from "fs-extra";
 import axios from "axios";
 import { execSync } from "child_process";
+import fs from "fs-extra";
+import path from "path";
+import ConsoleMessageHandler from "../utils/consoleMessageHandler";
+import { fetchComponentInfo, fetchComponentPath } from "../utils/registry";
+import { spinner } from "../utils/spinner";
 
 interface AddComponent {
   component: string;
@@ -27,10 +19,6 @@ interface LyfeConfig {
     utils?: string;
   };
 }
-
-// async function checkForValidations() {
-
-// }
 
 export async function addComponent({
   component,
@@ -91,9 +79,16 @@ export async function addComponent({
         ...packageJson.devDependencies,
       };
 
-      const missingDeps = componentInfo.dependencies?.filter(
-        (dep) => !installedDeps[dep]
-      );
+      // Extract package name from versioned dependency string (e.g., "lucide-react@^0.511.0" -> "lucide-react")
+      const extractPackageName = (dep: string): string => {
+        const atIndex = dep.indexOf("@");
+        return atIndex === -1 ? dep : dep.substring(0, atIndex);
+      };
+
+      const missingDeps = componentInfo.dependencies?.filter((dep) => {
+        const packageName = extractPackageName(dep);
+        return !installedDeps[packageName];
+      });
 
       if (missingDeps.length > 0) {
         spinnerInstance.text = `Installing missing dependencies: ${missingDeps.join(", ")}`;
@@ -145,118 +140,15 @@ export async function addComponent({
       spinnerInstance.text = "Handling local dependencies...";
 
       for (const localDep of componentInfo.localDependenciesResolve) {
-        let targetPath: string;
-        let sourceUrl: string;
-
-        // Determine target path and source URL based on type
         switch (localDep.type) {
           case "COMPONENT":
-            // const componentAlias = lyfeConfig["aliases-local"]?.components;
-            // if (!componentAlias) {
-            //   throw new Error(
-            //     "Component alias not found in lyfe.config.json for local dependency"
-            //   );
-            // }
-            // targetPath = path.join(
-            //   cwd,
-            //   componentAlias.replace("@/", ""),
-            //   localDep.path
-            // );
-            // sourceUrl = await fetchComponentPath(localDep.path);
             await addComponent({ component: localDep.path, skipDependencies });
             break;
-
-          // case "HOOK":
-          //   const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
-          //   if (!hooksAlias) {
-          //     throw new Error(
-          //       "Hooks alias not found in lyfe.config.json for local dependency"
-          //     );
-          //   }
-          //   targetPath = path.join(
-          //     cwd,
-          //     hooksAlias.replace("@/", ""),
-          //     `${localDep.path}.ts`
-          //   );
-          //   sourceUrl = await fetchHooksPath(localDep.path);
-          //   break;
-
-          // case "UTILS":
-          //   const utilsAlias = lyfeConfig["aliases-local"]?.utils;
-          //   if (!utilsAlias) {
-          //     throw new Error(
-          //       "Utils alias not found in lyfe.config.json for local dependency"
-          //     );
-          //   }
-          //   targetPath = path.join(
-          //     cwd,
-          //     utilsAlias.replace("@/", ""),
-          //     `${localDep.path}.ts`
-          //   );
-          //   sourceUrl = await fetchUtilsPath(localDep.path);
-          //   break;
-
           default:
             throw new Error(`Unknown local dependency type: ${localDep.type}`);
         }
-
-        // Check if file exists, if not copy it
-        // if (!fs.existsSync(targetPath)) {
-        //   const localDepResponse = await axios.get(sourceUrl);
-        //   const localDepCode = localDepResponse.data;
-
-        //   // Ensure directory exists
-        //   await fs.ensureDir(path.dirname(targetPath));
-        //   await fs.writeFile(targetPath, localDepCode);
-        // }
       }
     }
-
-    // Handle hooks
-    // if (componentInfo.hooks?.length) {
-    //   spinnerInstance.text = "Handling hooks...";
-
-    //   const hooksAlias = lyfeConfig["aliases-local"]?.hooks;
-    //   if (hooksAlias) {
-    //     const hooksFolderPath = path.join(cwd, hooksAlias.replace("@/", ""));
-    //     await fs.ensureDir(hooksFolderPath);
-
-    //     for (const hook of componentInfo.hooks) {
-    //       const hookPath = path.join(hooksFolderPath, `${hook}.ts`);
-
-    //       // Check if file exists, if not copy it
-    //       if (!fs.existsSync(hookPath)) {
-    //         const hookUrl = await fetchHooksPath(hook);
-    //         const hookResponse = await axios.get(hookUrl);
-    //         const hookCode = hookResponse.data;
-    //         await fs.writeFile(hookPath, hookCode);
-    //       }
-    //     }
-    //   }
-    // }
-
-    // // Handle utils
-    // if (componentInfo.utils?.length) {
-    //   spinnerInstance.text = "Handling utils...";
-
-    //   const utilsAlias = lyfeConfig["aliases-local"]?.utils;
-    //   if (utilsAlias) {
-    //     const utilsFolderPath = path.join(cwd, utilsAlias.replace("@/", ""));
-    //     await fs.ensureDir(utilsFolderPath);
-
-    //     for (const util of componentInfo.utils) {
-    //       const utilPath = path.join(utilsFolderPath, `${util}.ts`);
-
-    //       // Check if file exists, if not copy it
-    //       if (!fs.existsSync(utilPath)) {
-    //         const utilUrl = await fetchUtilsPath(util);
-    //         const utilResponse = await axios.get(utilUrl);
-    //         const utilCode = utilResponse.data;
-    //         await fs.writeFile(utilPath, utilCode);
-    //       }
-    //     }
-    //   }
-    // }
 
     spinnerInstance.succeed(`Component "${component}" added successfully!`);
     ConsoleMessageHandler.SUCCESS(`Component added at: ${componentFilePath}`);
